@@ -1,0 +1,6 @@
+{
+  "name": "Client Profiler - クライアント環境・接続詳細診断",
+  "description": "流入元リファラ、訪問回数、行動履歴、回線速度、GPUレンダラー、CPU/メモリ、パブリックIP・ISP・位置情報、OS・ブラウザ詳細をリアルタイムに網羅取得する診断ツール",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
