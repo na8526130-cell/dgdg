@@ -92,6 +92,16 @@ export const Header: React.FC<HeaderProps> = ({
             セキュリティ & API
           </a>
           <a
+            href="#deep-diagnostics"
+            className={`whitespace-nowrap shrink-0 transition-colors ${
+              activeSection === 'deep-diagnostics'
+                ? 'text-cyan-600 dark:text-cyan-400 font-semibold'
+                : 'hover:text-slate-900 dark:hover:text-slate-200'
+            }`}
+          >
+            ディープ診断
+          </a>
+          <a
             href="#referrer"
             className={`whitespace-nowrap shrink-0 transition-colors ${
               activeSection === 'referrer'

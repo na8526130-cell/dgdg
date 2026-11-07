@@ -108,7 +108,18 @@ export const ExportModal: React.FC<ExportModalProps> = ({
 
 ---
 
-## 7. 生の User-Agent
+## 7. ディープハードウェア・権限・接続機器・ストレージ・内蔵フォント
+- **Client Hints CPU**: ${data.clientHints?.architecture || '非公開'} (${data.clientHints?.bitness || '64-bit'})
+- **端末モデル**: ${data.clientHints?.model || 'PC / デスクトップ'} (OS詳細ビルド: v${data.clientHints?.platformVersion || data.browser.osVersion})
+- **接続メディア機器**: カメラ ${data.mediaDevices?.videoInputCount ?? 0}台, マイク ${data.mediaDevices?.audioInputCount ?? 0}台, スピーカー ${data.mediaDevices?.audioOutputCount ?? 0}台 (合計: ${data.mediaDevices?.totalDevices ?? 0}台)
+- **ブラウザ権限**: 位置情報 [${data.permissions?.geolocation || '不明'}], カメラ [${data.permissions?.camera || '不明'}], マイク [${data.permissions?.microphone || '不明'}], 通知 [${data.permissions?.notifications || '不明'}]
+- **ストレージ容量**: 割当上限 ${data.storage?.quotaGb ? `${data.storage.quotaGb} GB` : '取得不可'} (使用中: ${data.storage?.usageMb ?? 0} MB, 使用率: ${data.storage?.usagePercent ?? 0}%)
+- **内蔵フォント検出**: ${data.fonts?.detectedCount ?? 0} / ${data.fonts?.totalScanned ?? 0} 種類 (指紋Hash: \`${data.fonts?.fontFingerprintHash || 'N/A'}\`)
+- **WebRTC IPv6**: ${data.webrtcInfo?.dualStackIpv6 ? '対応 (IPv6/IPv4デュアルスタック)' : 'IPv4のみ'} (STUN候補: ${data.webrtcInfo?.candidateTypes.join(', ') || 'mDNS匿名化'})
+
+---
+
+## 8. 生の User-Agent
 \`\`\`
 ${data.browser.rawUserAgent}
 \`\`\`

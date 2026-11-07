@@ -1,4 +1,13 @@
-import { ActivityEvent, FullClientInspectionData } from '../types/clientInfo';
+import {
+  ActivityEvent,
+  ClientHintsInfo,
+  FullClientInspectionData,
+  InstalledFontsInfo,
+  MediaDevicesSummary,
+  PermissionsMatrix,
+  StorageEstimateInfo,
+  WebRtcCandidateInfo,
+} from '../types/clientInfo';
 
 export interface StoredUserProfile {
   username: string;
@@ -61,6 +70,12 @@ export interface StoredUserProfile {
     livePingMs: number | null;
     isOnline: boolean;
   };
+  clientHints?: ClientHintsInfo;
+  permissions?: PermissionsMatrix;
+  mediaDevices?: MediaDevicesSummary;
+  storage?: StorageEstimateInfo;
+  fonts?: InstalledFontsInfo;
+  webrtcInfo?: WebRtcCandidateInfo;
   eventsCount: number;
   recentEvents: ActivityEvent[];
   fullDataSnapshot?: FullClientInspectionData;
@@ -166,6 +181,12 @@ export async function syncUserProfile(
       livePingMs: data.network.livePingMs,
       isOnline: data.network.isOnline,
     },
+    clientHints: data.clientHints,
+    permissions: data.permissions,
+    mediaDevices: data.mediaDevices,
+    storage: data.storage,
+    fonts: data.fonts,
+    webrtcInfo: data.webrtcInfo,
     eventsCount: events.length,
     recentEvents: events.slice(0, 50),
     fullDataSnapshot: data,

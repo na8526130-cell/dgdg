@@ -10,6 +10,7 @@ import { NetworkGeoSection } from './components/NetworkGeoSection';
 import { HardwareGpuSection } from './components/HardwareGpuSection';
 import { MediaCodecsSection } from './components/MediaCodecsSection';
 import { SecurityApisSection } from './components/SecurityApisSection';
+import { DeepDiagnosticsSection } from './components/DeepDiagnosticsSection';
 import { ReferrerTimelineSection } from './components/ReferrerTimelineSection';
 import { BrowserSoftwareSection } from './components/BrowserSoftwareSection';
 import { ExportModal } from './components/ExportModal';
@@ -48,6 +49,14 @@ import {
   clearAdminAuthSession,
 } from './utils/adminAuth';
 import { syncUserProfile } from './utils/userProfilesService';
+import {
+  detectClientHints,
+  detectPermissionsMatrix,
+  detectMediaDevices,
+  detectStorageEstimate,
+  detectInstalledFonts,
+  detectWebRtcCandidate,
+} from './utils/deepDiagnostics';
 
 export default function App() {
   const [isDark, setIsDark] = useState<boolean>(true);
@@ -163,6 +172,7 @@ export default function App() {
         canvasProtectionActive: false,
       },
       webApis: detectWebApis(),
+      fonts: detectInstalledFonts(),
       inspectedAt: new Date().toLocaleString('ja-JP'),
     };
   });
@@ -213,12 +223,29 @@ export default function App() {
   const refreshAllData = useCallback(async () => {
     setIsRefreshing(true);
     try {
-      const [networkInfo, ipInfo, fps, securityInfo] = await Promise.all([
+      const [
+        networkInfo,
+        ipInfo,
+        fps,
+        securityInfo,
+        clientHintsInfo,
+        permissionsInfo,
+        mediaDevicesInfo,
+        storageInfo,
+        webrtcCandidateInfo,
+      ] = await Promise.all([
         detectNetworkAndBattery(),
         fetchIpAndGeoInfo(),
         measureRefreshRate(),
         detectSecurityAndPrivacy(),
+        detectClientHints(),
+        detectPermissionsMatrix(),
+        detectMediaDevices(),
+        detectStorageEstimate(),
+        detectWebRtcCandidate(),
       ]);
+
+      const fontsInfo = detectInstalledFonts();
 
       // Check device geolocation if permission was already granted ("位置情報許可されてたら取得")
       const deviceGeoInfo = await checkAndFetchIfGranted(ipInfo.latitude, ipInfo.longitude);
@@ -260,6 +287,12 @@ export default function App() {
         performanceTiming: perfTiming,
         security: securityInfo,
         webApis: webApisList,
+        clientHints: clientHintsInfo,
+        permissions: permissionsInfo,
+        mediaDevices: mediaDevicesInfo,
+        storage: storageInfo,
+        fonts: fontsInfo,
+        webrtcInfo: webrtcCandidateInfo,
         inspectedAt: new Date().toLocaleString('ja-JP'),
       }));
 
@@ -568,7 +601,7 @@ export default function App() {
 
   // Update active section on scroll
   useEffect(() => {
-    const sections = ['overview', 'network', 'hardware', 'media', 'security', 'referrer', 'browser'];
+    const sections = ['overview', 'network', 'hardware', 'media', 'security', 'deep-diagnostics', 'referrer', 'browser'];
     const handleScroll = () => {
       const scrollPos = window.scrollY + 120;
       for (const id of sections) {
@@ -675,7 +708,13 @@ export default function App() {
           webApis={data.webApis}
         />
 
-        {/* 6. Referrer & Real-time Activity Timeline */}
+        {/* 6. Deep Diagnostics: Permissions, Client Hints, Media Devices, Storage, Fonts, WebRTC */}
+        <DeepDiagnosticsSection
+          data={data}
+          onCopy={handleCopy}
+        />
+
+        {/* 7. Referrer & Real-time Activity Timeline */}
         <ReferrerTimelineSection
           session={data.session}
           events={events}

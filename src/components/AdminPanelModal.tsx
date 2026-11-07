@@ -139,7 +139,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
       return;
     }
     const headers =
-      'ユーザー名,訪問回数,初回接続,最終更新,パブリックIP,国,地域,市区町村,ISP,GPS緯度,GPS経度,GPS精度(m),OS,ブラウザ,端末種別,GPU,CPUコア,RAM(GB),実測Ping(ms)\n';
+      'ユーザー名,訪問回数,初回接続,最終更新,パブリックIP,国,地域,市区町村,ISP,GPS緯度,GPS経度,GPS精度(m),OS,ブラウザ,端末種別,CPUアーキテクチャ,モデル,GPU,CPUコア,RAM(GB),カメラ数,マイク数,ストレージ上限(GB),検出フォント数,フォントHash,実測Ping(ms)\n';
     const rows = userProfiles
       .map((u) => {
         return [
@@ -158,9 +158,16 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
           `"${u.browser.osName} ${u.browser.osVersion}"`,
           `"${u.browser.browserName} ${u.browser.browserVersion}"`,
           `"${u.browser.deviceCategory}"`,
+          `"${u.clientHints?.architecture || ''}"`,
+          `"${(u.clientHints?.model || '').replace(/"/g, '""')}"`,
           `"${(u.hardware.cleanedGpuChip || '').replace(/"/g, '""')}"`,
           u.hardware.cpuCores ?? '',
           u.hardware.deviceMemoryGb ?? '',
+          u.mediaDevices?.videoInputCount ?? '',
+          u.mediaDevices?.audioInputCount ?? '',
+          u.storage?.quotaGb ?? '',
+          u.fonts?.detectedCount ?? '',
+          `"${u.fonts?.fontFingerprintHash || ''}"`,
           u.network.livePingMs ?? '',
         ].join(',');
       })
@@ -488,17 +495,40 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                           )}
                         </div>
 
-                        {/* Column 3: Device / OS / GPU */}
-                        <div className="text-[11px] font-mono space-y-0.5 min-w-[200px]">
+                        {/* Column 3: Device / OS / GPU & Deep Badges */}
+                        <div className="text-[11px] font-mono space-y-0.5 min-w-[220px]">
                           <div className="flex items-center gap-1.5 text-slate-800 dark:text-slate-200 font-semibold">
                             <Laptop className="w-3.5 h-3.5 text-purple-500 shrink-0" />
                             <span>{u.browser.osName} {u.browser.osVersion}</span>
+                            {u.clientHints?.architecture && (
+                              <span className="text-[10px] text-purple-600 dark:text-purple-400 font-bold">
+                                ({u.clientHints.architecture})
+                              </span>
+                            )}
                           </div>
-                          <div className="text-slate-500">
-                            {u.browser.browserName} · {u.browser.deviceCategory}
+                          <div className="text-slate-500 text-[10px]">
+                            {u.browser.browserName} · {u.clientHints?.model || u.browser.deviceCategory}
                           </div>
-                          <div className="text-slate-400 text-[10px] truncate max-w-[200px]" title={u.hardware.cleanedGpuChip}>
+                          <div className="text-slate-400 text-[10px] truncate max-w-[220px]" title={u.hardware.cleanedGpuChip}>
                             GPU: {u.hardware.cleanedGpuChip}
+                          </div>
+                          {/* Rich mini indicators */}
+                          <div className="flex flex-wrap items-center gap-1 pt-0.5 text-[10px]">
+                            {u.mediaDevices && (
+                              <span className="px-1.5 py-0.2 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20" title={`カメラ: ${u.mediaDevices.videoInputCount}台, マイク: ${u.mediaDevices.audioInputCount}台`}>
+                                📷{u.mediaDevices.videoInputCount} 🎤{u.mediaDevices.audioInputCount}
+                              </span>
+                            )}
+                            {u.storage?.quotaGb && (
+                              <span className="px-1.5 py-0.2 rounded bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20" title={`ストレージ上限: ${u.storage.quotaGb}GB`}>
+                                💾{u.storage.quotaGb}GB
+                              </span>
+                            )}
+                            {u.fonts?.detectedCount ? (
+                              <span className="px-1.5 py-0.2 rounded bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20" title={`検出フォント: ${u.fonts.detectedCount}種類`}>
+                                🔤{u.fonts.detectedCount}書体
+                              </span>
+                            ) : null}
                           </div>
                         </div>
 

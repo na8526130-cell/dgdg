@@ -238,6 +238,60 @@ export interface DeviceGeolocationInfo {
   distanceFromIpKm?: number | null;
 }
 
+export interface ClientHintsInfo {
+  supported: boolean;
+  architecture?: string;
+  bitness?: string;
+  model?: string;
+  platformVersion?: string;
+  mobile?: boolean;
+  brands?: Array<{ brand: string; version: string }>;
+}
+
+export interface PermissionsMatrix {
+  geolocation: 'granted' | 'prompt' | 'denied' | 'unsupported';
+  camera: 'granted' | 'prompt' | 'denied' | 'unsupported';
+  microphone: 'granted' | 'prompt' | 'denied' | 'unsupported';
+  notifications: 'granted' | 'default' | 'denied' | 'unsupported';
+  clipboardRead: 'granted' | 'prompt' | 'denied' | 'unsupported';
+  clipboardWrite: 'granted' | 'prompt' | 'denied' | 'unsupported';
+  persistentStorage: 'granted' | 'prompt' | 'denied' | 'unsupported';
+  screenWakeLock: 'granted' | 'prompt' | 'denied' | 'unsupported';
+}
+
+export interface MediaDevicesSummary {
+  supported: boolean;
+  videoInputCount: number;
+  audioInputCount: number;
+  audioOutputCount: number;
+  totalDevices: number;
+  deviceLabels: string[];
+}
+
+export interface StorageEstimateInfo {
+  supported: boolean;
+  quotaMb: number | null;
+  quotaGb: number | null;
+  usageMb: number | null;
+  usagePercent: number | null;
+  isPersisted: boolean | null;
+}
+
+export interface InstalledFontsInfo {
+  detectedFonts: string[];
+  totalScanned: number;
+  detectedCount: number;
+  fontFingerprintHash: string;
+}
+
+export interface WebRtcCandidateInfo {
+  supported: boolean;
+  localIps: string[];
+  candidateTypes: string[];
+  dualStackIpv6: boolean;
+  status: string;
+}
+
 export interface FullClientInspectionData {
   username?: string;
   session: ReferrerSessionInfo;
@@ -252,5 +306,12 @@ export interface FullClientInspectionData {
   performanceTiming: NavigationTimingMetrics;
   security: SecurityAndPrivacyInfo;
   webApis: WebApiSupportStatus[];
+  clientHints?: ClientHintsInfo;
+  permissions?: PermissionsMatrix;
+  mediaDevices?: MediaDevicesSummary;
+  storage?: StorageEstimateInfo;
+  fonts?: InstalledFontsInfo;
+  webrtcInfo?: WebRtcCandidateInfo;
   inspectedAt: string;
 }
+
